@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 data "google_project" "user_project" {
+  count = var.create_project ? 0 : 1
+  # this is not needed if you run terraform from the cloud console
+  # or the GOOGLE_PROJECT or GOOGLE_CLOUD_PROJECT env vars are set
+  project_id = var.project_name
 }
 
 
 locals {
 
-  project = data.google_project.user_project
-
+  project = var.create_project ? resource.google_project.new_project[0] : data.google_project.user_project[0]
 
   region = var.default_region
 
@@ -60,12 +63,10 @@ resource "random_id" "default" {
 
 
 resource "google_project_service" "enabled_services" {
-  for_each                   = toset(local.project_services)
-  project                    = local.project.project_id
-  service                    = each.value
-  disable_dependent_services = true
-  disable_on_destroy         = true
-
+  for_each           = toset(local.project_services)
+  project            = local.project.project_id
+  service            = each.value
+  disable_on_destroy = false
 }
 
 data "google_compute_default_service_account" "default" {
@@ -111,7 +112,7 @@ resource "google_storage_bucket_object" "config" {
     NEXTFLOW_SERVICE_ACCOUNT = module.nextflow_service_account.email,
     NEXTFLOW_LOCATION        = var.nextflow_API_location,
     NEXTFLOW_ZONE            = var.nextflow_zone,
-    BUCKET_URL = google_storage_bucket.nextflow_workflow_bucket.url
+    BUCKET_URL               = google_storage_bucket.nextflow_workflow_bucket.url
   })
 }
 

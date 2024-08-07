@@ -118,8 +118,8 @@ variable "project_name" {
 
 variable "random_id" {
   description = "Adds a suffix of 4 random characters to the `project_id`"
-  type        = string
-  default     = null
+  type        = bool
+  default     = true
 }
 
 variable "set_external_ip_policy" {
@@ -146,3 +146,14 @@ variable "set_trustedimage_project_policy" {
   default     = true
 }
 
+variable "terraform_sa" {
+  description = "Service Account to se in terraform provider"
+  type        = string
+  default     = null
+}
+
+variable "billing_account" {
+  description = "billing account id"
+  type        = string
+  default     = null
+}

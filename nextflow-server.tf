@@ -15,8 +15,11 @@
  */
 data "google_compute_image" "debian" {
   project = "debian-cloud"
-  family  = "debian-10"
+  name    = "debian-12-bookworm-v20240709"
+  # family will force terraform to recreate the VM every time a new image version is released
+  # family  = "debian-10"
 }
+
 //Create nextflow service account and assign required roles
 module "nextflow_service_account" {
   source       = "terraform-google-modules/service-accounts/google"
